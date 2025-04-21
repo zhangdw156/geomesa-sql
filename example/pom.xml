@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <name>GeoMesa SQL Example</name>
@@ -44,9 +44,9 @@
     <scala.binary.version>2.12</scala.binary.version>
 
     <geomesa.sql.version>0.1.0</geomesa.sql.version>
-    <geomesa.version>3.4.1</geomesa.version>
-    <gt.version>23.3</gt.version>
-    <accumulo.version>2.0.1</accumulo.version>
+    <geomesa.version>4.0.1</geomesa.version>
+    <gt.version>24.0</gt.version>
+    <hbase.version>2.5.5</hbase.version>
   </properties>
 
   <dependencies>
@@ -62,19 +62,23 @@
     </dependency>
     <dependency>
       <groupId>org.locationtech.geomesa</groupId>
-      <artifactId>geomesa-accumulo-datastore_${scala.binary.version}</artifactId>
+      <artifactId>geomesa-hbase-datastore_${scala.binary.version}</artifactId>
       <version>${geomesa.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>com.fasterxml.jackson.core</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.apache.accumulo</groupId>
-      <artifactId>accumulo-core</artifactId>
-      <version>${accumulo.version}</version>
+      <groupId>org.apache.hbase</groupId>
+      <artifactId>hbase-client</artifactId>
+      <version>${hbase.version}</version>
+    </dependency>
+<!--    <dependency>-->
+<!--      <groupId>org.apache.hbase</groupId>-->
+<!--      <artifactId>hbase-server</artifactId>-->
+<!--      <version>${hbase.version}</version>-->
+<!--    </dependency>-->
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>31.1-jre</version>
     </dependency>
   </dependencies>
 
@@ -116,7 +120,6 @@
   </build>
 
   <repositories>
-    <!-- include central so that it is searched before our alternate repos -->
     <repository>
       <id>central</id>
       <name>Maven Repository Switchboard</name>
@@ -126,7 +129,6 @@
         <enabled>false</enabled>
       </snapshots>
     </repository>
-    <!-- geotools -->
     <repository>
       <id>osgeo</id>
       <url>https://repo.osgeo.org/repository/release</url>
@@ -135,5 +137,4 @@
       </snapshots>
     </repository>
   </repositories>
-
 </project>

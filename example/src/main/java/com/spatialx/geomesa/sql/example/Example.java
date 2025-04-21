@@ -46,6 +46,9 @@ public class Example {
         console.printf("> ");
         console.flush();
         String sql = console.readLine();
+        if ("exit".equalsIgnoreCase(sql) || "quit".equalsIgnoreCase(sql)) {
+          System.exit(0);  // 正常退出程序
+        }
         try (Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
           int numColumns = resultSet.getMetaData().getColumnCount();
