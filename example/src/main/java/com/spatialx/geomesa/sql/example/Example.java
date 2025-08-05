@@ -21,7 +21,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
-
+ 
 /**
  * Example of running SQL queries on GeoMesa DataStore using GeoMesa SQL JDBC
  * module.

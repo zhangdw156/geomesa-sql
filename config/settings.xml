@@ -1,0 +1,48 @@
+<settings>
+  <profiles>
+    <profile>
+      <id>geotools</id>
+      <repositories>
+        <!-- GeoTools 官方仓库 -->
+        <repository>
+          <id>osgeo</id>
+          <name>OSGeo Release Repository</name>
+          <url>https://repo.osgeo.org/repository/release/</url>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+        </repository>
+        <!-- GeoTools 快照仓库（如果需要SNAPSHOT版本） -->
+        <repository>
+          <id>osgeo-snapshot</id>
+          <name>OSGeo Snapshot Repository</name>
+          <url>https://repo.osgeo.org/repository/snapshot/</url>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+        </repository>
+      </repositories>
+    </profile>
+  </profiles>
+
+  <!-- 激活上述仓库配置 -->
+  <activeProfiles>
+    <activeProfile>geotools</activeProfile>
+  </activeProfiles>
+
+  <!-- 保留原有的阿里仓库配置 -->
+  <mirrors>
+    <mirror>
+      <id>aliyunmaven</id>
+      <mirrorOf>*,!osgeo,!osgeo-snapshot</mirrorOf> <!-- 排除GeoTools仓库，避免被阿里镜像拦截 -->
+      <name>阿里云公共仓库</name>
+      <url>https://maven.aliyun.com/repository/public</url>
+    </mirror>
+  </mirrors>
+</settings>
