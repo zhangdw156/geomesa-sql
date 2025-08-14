@@ -32,7 +32,90 @@ mvn clena package -DskipTests # -DskipTests很重要，不然要花很多时间�
 
 ## 记录
 
-## 25.8.13
+### 25.8.14
+
+终于看到了
+
+```shell
+SELECT line, COUNT(1) FROM beijing_subway_station JOIN beijing_subway ON ST_Intersects(beijing_subway.geom, beijing_subway_station.geom) GROUP BY line";
+```
+
+的AST
+
+```shell
+SqlSelect
+├─ selectList: [SqlNodeList, size=2]
+│  ├─ SqlIdentifier: `LINE`
+│  └─ SqlCall: COUNT(1)
+├─ from: SqlJoin
+│  ├─ joinType: INNER JOIN
+│  ├─ left: SqlIdentifier: `BEIJING_SUBWAY_STATION`
+│  ├─ right: SqlIdentifier: `BEIJING_SUBWAY`
+│  └─ condition: SqlCall: ST_INTERSECTS(
+│     ├─ SqlIdentifier: `BEIJING_SUBWAY`.`GEOM`
+│     └─ SqlIdentifier: `BEIJING_SUBWAY_STATION`.`GEOM`
+│  )
+└─ groupBy: [SqlNodeList, size=1]
+   └─ SqlIdentifier: `LINE`
+```
+
+和逻辑执行计划
+
+```shell
+LogicalAggregate (rel#8)  -- 根节点：按line分组并计算COUNT(1)
+├─ 功能：GROUP BY line，聚合计算每条线路的地铁站数量
+├─ 输出字段：LINE (VARCHAR)、EXPR$1 (BIGINT，COUNT结果)
+├─ 分组字段：第0个字段（即LINE）
+└─ 输入节点：LogicalProject (rel#7)
+
+  LogicalProject (rel#7)  -- 投影节点：筛选需要的字段
+  ├─ 功能：从连接结果中仅保留line字段（供聚合使用）
+  ├─ 投影表达式：[$3]（选择输入的第3个字段，即line）
+  ├─ 输出字段：LINE (VARCHAR)
+  └─ 输入节点：LogicalJoin (rel#5)
+
+    LogicalJoin (rel#5)  -- 连接节点：关联两个表
+    ├─ 功能：内连接地铁站表和线路表，保留空间相交的记录
+    ├─ 连接类型：INNER JOIN
+    ├─ 连接条件：ST_INTERSECTS($7, $4)  -- 空间相交判断
+    │  ├─ $4：左表（地铁站）的geom字段（空间位置）
+    │  └─ $7：右表（线路）的geom字段（空间形状）
+    ├─ 左输入：GeoMesaLogicalTableScan (rel#1)
+    │  └─ 扫描表：GEOMESA.beijing_subway_station（地铁站表）
+    └─ 右输入：GeoMesaLogicalTableScan (rel#3)
+       └─ 扫描表：GEOMESA.beijing_subway（地铁线路表）
+```
+
+和物执行计划
+
+```shell
+RelRoot (根节点)
+├─ 类型：SELECT（查询操作）
+├─ 输出结构：RecordType(VARCHAR LINE, BIGINT EXPR$1)
+└─ 核心执行节点：EnumerableAggregate (rel#120)
+
+  EnumerableAggregate (物理聚合节点)
+  ├─ 功能：按字段索引0（LINE）分组，执行COUNT(1)计算
+  ├─ 物理约定：ENUMERABLE（可枚举迭代执行）
+  ├─ 输出字段：LINE (VARCHAR)、EXPR$1 (BIGINT，计数结果)
+  └─ 输入节点：EnumerableSpatialJoin (rel#118)
+
+    EnumerableSpatialJoin (物理空间连接节点)
+    ├─ 功能：执行内连接，通过ST_INTERSECTS判断空间相交
+    ├─ 物理约定：ENUMERABLE
+    ├─ 连接条件：ST_INTERSECTS($2, $1)（左表第2字段与右表第1字段空间相交）
+    ├─ 空间参数：leftGeom=$1（左表几何字段索引1）、rightGeom=$0（右表几何字段索引0）、within=0.0（误差范围）
+    ├─ 左输入：GeoMesaToEnumerableConverter (rel#113)
+    │  └─ 功能：将GeoMesa物理扫描结果转换为可枚举类型
+    │     └─ 输入节点：GeoMesaPhysicalTableScan (rel#81)
+    │        └─ 功能：从GeoMesa读取beijing_subway_station表数据
+    └─ 右输入：GeoMesaToEnumerableConverter (rel#116)
+       └─ 功能：将GeoMesa物理扫描结果转换为可枚举类型
+          └─ 输入节点：GeoMesaPhysicalTableScan (rel#85)
+             └─ 功能：从GeoMesa读取beijing_subway表数据
+```
+
+### 25.8.13
 
 太感动了，终于在I里DEA启动成功了！
 
