@@ -16,7 +16,7 @@ public class Example2 {
         info.setProperty("caseSensitive", "false");
         try (Connection connection = DriverManager.getConnection(jdbcUrl, info)) {
             System.out.println("成功连接");
-            String sql = "SELECT line, COUNT(1) FROM beijing_subway_station JOIN beijing_subway ON ST_Intersects(beijing_subway.geom, beijing_subway_station.geom) GROUP BY line";
+            String sql = "select * from beijing_subway where name = 'S1线'";
             try (Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(sql)) {
                 int numColumns = resultSet.getMetaData().getColumnCount();
